@@ -1,0 +1,179 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.37.1
+    container_name: prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - product-service
+      - inventory-service
+      - order-service
+      - notification-service
+      - api-gateway
+
+  grafana:
+    image: grafana/grafana-oss:8.5.2
+    container_name: grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    links:
+      - prometheus:prometheus
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+  ## Zipkin
+  zipkin:
+    image: openzipkin/zipkin
+    container_name: zipkin
+    ports:
+      - "9411:9411"
+  discovery-server:
+    image: bharathchavala/microservice-app:discovery-server
+    container_name: discovery-server
+    pull_policy: always
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - springboot-mysql-network
+    depends_on:
+      - zipkin
+
+
+  api-gateway:
+    image: bharathchavala/microservice-app:api-gateway
+    container_name: api-gateway
+    pull_policy: always
+    ports:
+      - "8181:8085"
+    expose:
+      - "8181"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY=TRACE
+      - DOCKER_HOST=host.docker.internal
+    depends_on:
+      - discovery-server
+      - zipkin
+      - product-service
+    networks:
+      - springboot-mysql-network
+
+  product-service:
+    container_name: product-service
+    image: bharathchavala/microservice-app:product-service
+    pull_policy: always
+    ports:
+        - 8087:8087
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/personal
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Bharath@123
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - springboot-mysql-network
+    depends_on:
+      - mysqldb
+      - discovery-server
+
+  order-service:
+    container_name: order-service
+    image: bharathchavala/microservice-app:order-service
+    pull_policy: always
+    ports:
+      - 8082:8082
+      - 5005:5005
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb:3306/personal
+    networks:
+      - springboot-mysql-network
+    depends_on:
+      - mysqldb
+      - broker
+      - discovery-server
+      - api-gateway
+      - zipkin
+  inventory-service:
+    container_name: inventory-service
+    image: bharathchavala/microservice-app:inventory-service
+    pull_policy: always
+    ports:
+      - 8021:8021
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - springboot-mysql-network
+    depends_on:
+      - mysqldb
+      - discovery-server
+      - api-gateway
+
+
+  notification-service:
+    container_name: notification-service
+    image: bharathchavala/microservice-app:notification-service
+    pull_policy: always
+    ports:
+      - 9091:9091
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - broker
+      - discovery-server
+      - api-gateway
+      - zipkin
+  mysqldb:
+    image: mysql
+    ports:
+      - 3307:3306
+    environment:
+      - MYSQL_DATABASE=personal
+      - MYSQL_ROOT_PASSWORD=Bharath@123
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - springboot-mysql-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      retries: 10
+      interval: 3s
+      timeout: 30s
+networks:
+  springboot-mysql-network:
+    driver: bridge
+volumes:
+  mysql-data:
