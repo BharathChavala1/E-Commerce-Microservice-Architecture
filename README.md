@@ -57,7 +57,6 @@
         Implements circuit breakers and rate limiters to protect services from
         failures and overloads.
       </li>
-      <br />
       <img
         src="./Images/Circut_Breakers.png"
         alt=""
