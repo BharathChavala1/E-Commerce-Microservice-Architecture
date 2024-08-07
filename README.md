@@ -51,12 +51,13 @@
         </li>
       </ul>
       <h3>Resilience</h3>
-      <ul></ul>
+      <ul>
       <li>
         <h4 style="display: inline">Resilience4j:</h4>
         Implements circuit breakers and rate limiters to protect services from
         failures and overloads.
       </li>
+      </ul>
       <img
         src="./Images/Circut_Breakers.png"
         alt=""
