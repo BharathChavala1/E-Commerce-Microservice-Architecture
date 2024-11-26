@@ -11,8 +11,8 @@
       <img
         src="./Images/Architecture.png"
         alt=""
-        height="270px"
-        width="600px"
+        height="450px"
+        width="800px"
       />
       <h3>Key Components:</h3>
       <ul>
@@ -51,13 +51,13 @@
         </li>
       </ul>
       <h3>Resilience</h3>
-      <ul></ul>
+      <ul>
       <li>
         <h4 style="display: inline">Resilience4j:</h4>
         Implements circuit breakers and rate limiters to protect services from
         failures and overloads.
       </li>
-      <br />
+      </ul>
       <img
         src="./Images/Circut_Breakers.png"
         alt=""
