@@ -37,6 +37,7 @@ public class ProductServiceImpl implements ProductService {
 		List<Product> products = productRepo.findAll();
         return products.stream().map(this::mapToProductResponse).toList();
 	}
+
 	private ProductResponse mapToProductResponse(Product product) {
 		return ProductResponse.builder()
 				.productId(product.getProductId())
