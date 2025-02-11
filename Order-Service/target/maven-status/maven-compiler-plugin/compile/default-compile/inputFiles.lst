@@ -1,0 +1,11 @@
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/orderDTO/OrderLineItemsDTO.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/service/OrderService.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/controller/OrderController.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/repository/OrderRepository.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/entity/InventoryResponse.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/orderDTO/OrderRequest.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/config/WebClientConfig.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/entity/OrderLineItem.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/orderDTO/OrderPlacedEvent.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/entity/Order.java
+/Users/bharathchowdary/Documents/Projects/E-Commerce-Microservice-Architecture-main/Order-Service/src/main/java/com/example/demo/OrderServiceApplication.java
